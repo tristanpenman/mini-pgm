@@ -45,7 +45,7 @@ cpd_cancer = MiniPGM::TabularCPD.new(
   ]
 )
 
-model = MiniPGM::Model.new(
+model = MiniPGM::BayesianNetwork.new(
   MiniPGM::Edge.new('Pollution', 'Cancer'),
   MiniPGM::Edge.new('Smoker', 'Cancer')
 )
@@ -64,7 +64,7 @@ puts
   model.validate!
   puts 'OK!'
   puts
-rescue MiniPGM::Model::ModelError => e
+rescue MiniPGM::BayesianNetwork::ModelError => e
   puts "Error: #{e.message}"
   puts
 end

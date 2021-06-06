@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
+require_relative 'model_error'
 require_relative 'node'
 
 module MiniPGM
   #
-  # Represents a Probabilistic Graphical Model (PGM)
+  # Represents a bayesian network
   #
-  class Model
-    class ModelError < StandardError; end
-
+  class BayesianNetwork
     #
     # Edges between individual nodes, sorted by label of the outgoing edge, e.g:
     #
