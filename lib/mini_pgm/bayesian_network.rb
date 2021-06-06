@@ -35,7 +35,7 @@ module MiniPGM
 
     def add_cpd(cpd)
       node = @nodes[cpd.variable.label]
-      raise ArgumentError, "node does not exist for label #{node.label}" unless node
+      raise ArgumentError, "node does not exist for label #{cpd.variable.label}" unless node
 
       check_cpd_evidence!(cpd.evidence.map(&:label), node.incoming_edges)
       node.cpd = cpd
