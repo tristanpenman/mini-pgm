@@ -64,7 +64,7 @@ puts
   model.validate!
   puts 'OK!'
   puts
-rescue MiniPGM::BayesianNetwork::ModelError => e
+rescue MiniPGM::ModelError => e
   puts "Error: #{e.message}"
   puts
 end

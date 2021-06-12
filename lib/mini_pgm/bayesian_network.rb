@@ -42,7 +42,7 @@ module MiniPGM
     end
 
     def to_s
-      ['Edges:', edges_to_s, '', 'Nodes:', nodes_to_s, '', 'Valid:', valid?, ''].join("\n")
+      ['Edges:', edges_to_s, '', 'Nodes:', nodes_to_s, '', 'Valid:', valid?(false), ''].join("\n")
     end
 
     def validate!
@@ -56,12 +56,12 @@ module MiniPGM
       end
     end
 
-    def valid?
+    def valid?(set_error = true)
       @error = nil
       validate!
       true
     rescue ModelError => e
-      @error = e
+      @error = e if set_error
       false
     end
 
