@@ -46,6 +46,9 @@ module MiniPGM
     end
 
     def validate!
+      cyclic_node = find_cyclic_node
+      raise ModelError, "graph contains a cycle, found at node: #{cyclic_node}" if cyclic_node
+
       @nodes.each_value do |node|
         raise ModelError, "node '#{node.label}' does not have a CPD" unless node.cpd
       end
@@ -81,6 +84,28 @@ module MiniPGM
 
     def edges_to_s
       @edges.map(&:to_s).join("\n")
+    end
+
+    # recursive method to find cycles using depth first search
+    def find_cyclic_node(labels = @nodes.keys, visited = Set.new, current = Set.new)
+      labels.each do |label|
+        node = @nodes[label]
+
+        # already visited this node on the current path
+        return node if current.include?(node)
+
+        # already visited this node naturally
+        next if visited.include?(node)
+
+        visited.add(node)
+        current.add(node)
+
+        cycle = find_cyclic_node(node.outgoing_edges, visited, current)
+        return cycle if cycle
+
+        current.delete(node)
+      end
+      nil
     end
 
     def nodes_to_s
