@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+# Add lib directory to front of include path
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'mini_pgm'
+
+#
+# Based on the extended student graph from Coursera PGM course
+#
+
+model1 = MiniPGM::BayesianNetwork.new(
+  MiniPGM::Edge.new('Difficulty', 'Grade'),
+  MiniPGM::Edge.new('Intelligence', 'Grade'),
+  MiniPGM::Edge.new('Intelligence', 'SAT'),
+  MiniPGM::Edge.new('Grade', 'Letter'),
+)
+
+puts model1
+puts
+
+puts 'Nodes reachable from Difficulty, given Grade, in model 1:'
+puts model1.reachable_from('Difficulty', ['Grade'])
+puts
+
+puts 'Nodes reachable from Difficulty, given Intelligence, in model 1:'
+puts model1.reachable_from('Difficulty', ['Intelligence'])
+puts
+
+#
+# Based on the extended student graph from Coursera PGM course
+#
+model2 = MiniPGM::BayesianNetwork.new(
+  MiniPGM::Edge.new('Coherence', 'Difficulty'),
+  MiniPGM::Edge.new('Difficulty', 'Grade'),
+  MiniPGM::Edge.new('Intelligence', 'Grade'),
+  MiniPGM::Edge.new('Intelligence', 'SAT'),
+  MiniPGM::Edge.new('Grade', 'Happy'),
+  MiniPGM::Edge.new('Grade', 'Letter'),
+  MiniPGM::Edge.new('Letter', 'Job'),
+  MiniPGM::Edge.new('Happy', 'Job')
+)
+
+puts model2
+puts
+
+puts 'Ancestors of Grade, in model2:'
+puts model2.ancestors_of('Grade')
+puts
+
+puts 'Nodes reachable from Difficulty, given Intelligence and Job, in model 2:'
+puts model2.reachable_from('Difficulty', ['Intelligence', 'Job'])
+puts
+
+puts 'Nodes reachable from Job, given SAT, in model 2:'
+puts model2.reachable_from('Job', ['SAT'])

@@ -41,6 +41,62 @@ module MiniPGM
       node.cpd = cpd
     end
 
+    def ancestors_of(label)
+      collect_ancestors(@nodes[label], Set.new).map(&:label)
+    end
+
+    #
+    # Based on Reachable algorithm from Probabilistic Graphical Models, by Koller and Friedman
+    #
+    # See doc/pgm-page-75.pdf for details
+    #
+    def reachable_from(from, observations)
+      # find all ancestors of observations
+      ancestors = observations.each_with_object(Set.new) do |observation, set|
+        node = @nodes[observation]
+        unless set.include?(node)
+          set.add(node)
+          collect_ancestors(node, set)
+        end
+      end
+
+      unvisited = [[from, :up]]
+      visited = Set.new
+      reachable = Set.new
+
+      until unvisited.empty?
+        n = unvisited.shift
+        y, d = n
+        yn = @nodes[y]
+
+        next if visited.include?(n)
+
+        reachable.add(y) unless observations.include?(y)
+
+        visited.add(n)
+
+        if d == :up && !observations.include?(y)
+          # y's parents to be visited from bottom
+          yn.incoming_edges.each { |edge| unvisited << [edge, :up] }
+          # y's children to be visited from top
+          yn.outgoing_edges.each { |edge| unvisited << [edge, :down] }
+        elsif d == :down
+          unless observations.include?(y)
+            # downward trails to y's children are active
+            # y's children to be visited from top
+            yn.outgoing_edges.each { |edge| unvisited << [edge, :down] }
+          end
+          if ancestors.include?(y)
+            # v-structure trails are active
+            # y's parents to be visited from bottom
+            yn.incoming_edges.each { |edge| unvisited << [edge, :up] }
+          end
+        end
+      end
+
+      reachable.to_a.sort
+    end
+
     def to_s
       ['Edges:', edges_to_s, '', 'Nodes:', nodes_to_s, '', 'Valid:', valid?(false), ''].join("\n")
     end
@@ -82,6 +138,17 @@ module MiniPGM
       end
     end
 
+    def collect_ancestors(node, set)
+      node.incoming_edges.each do |edge|
+        node = @nodes[edge]
+        unless set.include?(node)
+          set.add(node)
+          collect_ancestors(node, set)
+        end
+      end
+      set
+    end
+
     def edges_to_s
       @edges.map(&:to_s).join("\n")
     end
@@ -89,9 +156,8 @@ module MiniPGM
     # recursive method to find cycles using depth first search
     def find_cyclic_node(labels = @nodes.keys, visited = Set.new, current = Set.new)
       labels.each do |label|
-        node = @nodes[label]
-
         # already visited this node on the current path
+        node = @nodes[label]
         return node if current.include?(node)
 
         # already visited this node naturally

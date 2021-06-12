@@ -52,7 +52,7 @@ model = MiniPGM::BayesianNetwork.new(
 
 puts model
 puts
-puts "Last error: #{model.error}"
+puts model.valid? ? "No errors" : "Last error: #{model.error}"
 puts
 
 [cpd_cancer, cpd_pollution_bad, cpd_smoker, cpd_pollution_good].each do |cpd|
