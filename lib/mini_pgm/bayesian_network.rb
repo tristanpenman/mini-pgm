@@ -48,6 +48,10 @@ module MiniPGM
       collect_ancestors(@nodes[label], Set.new).map(&:label)
     end
 
+    def d_separated?(node_a, node_b, observations)
+      !reachable_from(node_a, observations).include?(node_b)
+    end
+
     #
     # Based on Reachable algorithm from Probabilistic Graphical Models, by Koller and Friedman
     #
