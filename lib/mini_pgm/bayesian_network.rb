@@ -100,7 +100,7 @@ module MiniPGM
     end
 
     def to_s
-      ['Edges:', edges_to_s, '', 'Nodes:', nodes_to_s, '', 'Valid:', valid?(false), ''].join("\n")
+      ['Edges:', edges_to_s, '', 'Nodes:', nodes_to_s, '', 'Valid:', valid?(set_error: false), ''].join("\n")
     end
 
     def validate!
@@ -114,7 +114,7 @@ module MiniPGM
       end
     end
 
-    def valid?(set_error = true)
+    def valid?(set_error: true)
       @error = nil
       validate!
       true

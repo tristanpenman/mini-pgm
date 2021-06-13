@@ -4,7 +4,9 @@ A Ruby gem that provides a minimal PGM implementation.
 
 ## Usage
 
-A demo program has been included in `bin/pgm`. It makes use of all of the basic classes included in the gem.
+Demo programs have been included in `./bin`.
+
+Tests can be run using `rspec`.
 
 ## License
 
