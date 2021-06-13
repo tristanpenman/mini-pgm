@@ -13,18 +13,16 @@ require 'mini_pgm'
 #       ^         |
 #       |---------|
 #
-model1 = MiniPGM::BayesianNetwork.new(
-  MiniPGM::Edge.new('A', 'B'),
-  MiniPGM::Edge.new('B', 'C'),
-  MiniPGM::Edge.new('C', 'D'),
-  MiniPGM::Edge.new('D', 'B'),
-)
-
-puts model1
-puts
-
-puts "Error: #{model1.error}" unless model1.valid?
-puts
+begin
+  MiniPGM::BayesianNetwork.new(
+    MiniPGM::Edge.new('A', 'B'),
+    MiniPGM::Edge.new('B', 'C'),
+    MiniPGM::Edge.new('C', 'D'),
+    MiniPGM::Edge.new('D', 'B'),
+  )
+rescue MiniPGM::ModelError => e
+  puts "Error: #{e.message}"
+end
 
 #
 #  Model 2
@@ -34,11 +32,10 @@ puts
 #  ^   |
 #  |---|
 #
-model2 = MiniPGM::BayesianNetwork.new(
-  MiniPGM::Edge.new('A', 'A')
-)
-
-puts model2
-puts
-
-puts "Error: #{model2.error}" unless model2.valid?
+begin
+  MiniPGM::BayesianNetwork.new(
+    MiniPGM::Edge.new('A', 'A')
+  )
+rescue MiniPGM::ModelError => e
+  puts "Error: #{e.message}"
+end

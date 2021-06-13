@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'model_error'
+require_relative 'errors'
 require_relative 'node'
 
 module MiniPGM
@@ -31,6 +31,9 @@ module MiniPGM
     def initialize(*edges)
       @edges = sort_edges(edges)
       @nodes = reduce_edges(edges)
+
+      cyclic_node = find_cyclic_node
+      raise ModelError, "graph contains a cycle, found at node: #{cyclic_node}" if cyclic_node
     end
 
     def add_cpd(cpd)
@@ -101,11 +104,8 @@ module MiniPGM
     end
 
     def validate!
-      cyclic_node = find_cyclic_node
-      raise ModelError, "graph contains a cycle, found at node: #{cyclic_node}" if cyclic_node
-
       @nodes.each_value do |node|
-        raise ModelError, "node '#{node.label}' does not have a CPD" unless node.cpd
+        raise ValidationError, "node '#{node.label}' does not have a CPD" unless node.cpd
       end
 
       # validate cardinality between nodes for each edge
@@ -118,7 +118,7 @@ module MiniPGM
       @error = nil
       validate!
       true
-    rescue ModelError => e
+    rescue ValidationError => e
       @error = e if set_error
       false
     end
@@ -195,7 +195,7 @@ module MiniPGM
       expected = to.cpd.evidence.find { |ev| ev.label == from.label }.cardinality
       actual = from.cpd.variable.cardinality
 
-      raise ModelError, "cardinality mismatch in CPDs of '#{from.label}' (#{actual}) and '#{to.label}' (#{expected})" \
+      raise ValidationError, "cardinality mismatch: '#{from.label}' (#{actual}) and '#{to.label}' (#{expected})" \
         unless expected == actual
     end
   end

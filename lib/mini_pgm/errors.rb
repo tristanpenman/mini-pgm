@@ -2,4 +2,5 @@
 
 module MiniPGM
   class ModelError < StandardError; end
+  class ValidationError < StandardError; end
 end

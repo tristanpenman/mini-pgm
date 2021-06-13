@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
 
 describe MiniPGM::BayesianNetwork do
-  let(:model1) do
+  let(:student_model) do
     MiniPGM::BayesianNetwork.new(
       MiniPGM::Edge.new('Difficulty', 'Grade'),
       MiniPGM::Edge.new('Intelligence', 'Grade'),
@@ -10,22 +10,43 @@ describe MiniPGM::BayesianNetwork do
     )
   end
 
-  describe '.reachable_from' do
-    context 'Difficulty' do
+  describe '.new' do
+    it 'detects cycles in a trivial case' do
+      expect do
+        MiniPGM::BayesianNetwork.new(
+          MiniPGM::Edge.new('A', 'A')
+        )
+      end.to raise_error(MiniPGM::ModelError) { |e| expect(e.message).to include('cycle') }
+    end
+
+    it 'detects cycles in a non-trivial cases' do
+      expect do
+        MiniPGM::BayesianNetwork.new(
+          MiniPGM::Edge.new('A', 'B'),
+          MiniPGM::Edge.new('B', 'C'),
+          MiniPGM::Edge.new('C', 'D'),
+          MiniPGM::Edge.new('D', 'B'),
+        )
+      end.to raise_error(MiniPGM::ModelError) { |e| expect(e.message).to include('cycle') }
+    end
+  end
+
+  describe '#reachable_from' do
+    context 'Student Model [Difficulty]' do
       it 'returns the correct list of labels when nothing is observed' do
-        reachable = model1.reachable_from('Difficulty', [])
+        reachable = student_model.reachable_from('Difficulty', [])
         # Intelligence and SAT are blocked by a v-structure
         expect(reachable).to eq ['Difficulty', 'Grade', 'Letter']
       end
 
       it 'returns the correct list of labels when Grade is observed' do
-        reachable = model1.reachable_from('Difficulty', ['Grade'])
+        reachable = student_model.reachable_from('Difficulty', ['Grade'])
         # Intelligence and SAT are now reachable, because v-structure was activated by Grade
         expect(reachable).to eq ['Difficulty', 'Intelligence', 'SAT']
       end
 
       it 'returns the correct list of labels when Letter is observed' do
-        reachable = model1.reachable_from('Difficulty', ['Letter'])
+        reachable = student_model.reachable_from('Difficulty', ['Letter'])
         # Intelligence and SAT are now reachable, because v-structure was activated by Letter, a descendent of Grade
         expect(reachable).to eq ['Difficulty', 'Grade', 'Intelligence', 'SAT']
       end
