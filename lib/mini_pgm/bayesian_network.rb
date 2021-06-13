@@ -53,10 +53,9 @@ module MiniPGM
     def reachable_from(from, observations)
       # find all ancestors of observations
       ancestors = observations.each_with_object(Set.new) do |observation, set|
-        node = @nodes[observation]
-        unless set.include?(node)
-          set.add(node)
-          collect_ancestors(node, set)
+        unless set.include?(observation)
+          set.add(observation)
+          collect_ancestors(@nodes[observation], set)
         end
       end
 
