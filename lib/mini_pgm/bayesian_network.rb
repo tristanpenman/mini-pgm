@@ -65,31 +65,31 @@ module MiniPGM
       reachable = Set.new
 
       until unvisited.empty?
-        n = unvisited.shift
-        y, d = n
-        yn = @nodes[y]
+        current = unvisited.shift
+        next if visited.include?(current)
 
-        next if visited.include?(n)
+        label, direction = current
+        node = @nodes[label]
+        reachable.add(label) unless observations.include?(label)
+        visited.add(current)
 
-        reachable.add(y) unless observations.include?(y)
-
-        visited.add(n)
-
-        if d == :up && !observations.include?(y)
-          # y's parents to be visited from bottom
-          yn.incoming_edges.each { |edge| unvisited << [edge, :up] }
-          # y's children to be visited from top
-          yn.outgoing_edges.each { |edge| unvisited << [edge, :down] }
-        elsif d == :down
-          unless observations.include?(y)
-            # downward trails to y's children are active
-            # y's children to be visited from top
-            yn.outgoing_edges.each { |edge| unvisited << [edge, :down] }
+        if direction == :up
+          unless observations.include?(label)
+            # current node's parents to be visited from bottom
+            node.incoming_edges.each { |edge| unvisited << [edge, :up] }
+            # current node's children to be visited from top
+            node.outgoing_edges.each { |edge| unvisited << [edge, :down] }
           end
-          if ancestors.include?(y)
+        else
+          unless observations.include?(label)
+            # downward trails to current node's children are active
+            # current node's children to be visited from top
+            node.outgoing_edges.each { |edge| unvisited << [edge, :down] }
+          end
+          if ancestors.include?(label)
             # v-structure trails are active
-            # y's parents to be visited from bottom
-            yn.incoming_edges.each { |edge| unvisited << [edge, :up] }
+            # current node's parents to be visited from bottom
+            node.incoming_edges.each { |edge| unvisited << [edge, :up] }
           end
         end
       end
