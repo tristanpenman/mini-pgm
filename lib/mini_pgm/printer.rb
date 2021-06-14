@@ -33,7 +33,14 @@ module MiniPGM
       private
 
       def max_width(rows, column)
-        rows.map { |row| row[column].length }.max
+        rows.map do |row|
+          cell = row[column]
+          if cell.respond_to?(:length)
+            cell.length
+          else
+            cell.to_s.length
+          end
+        end.max
       end
 
       def write_divider(column_widths)

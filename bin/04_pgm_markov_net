@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+
+# Add lib directory to front of include path
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'mini_pgm'
+
+model = MiniPGM::MarkovNetwork.new(
+  MiniPGM::Edge.new('A', 'B'),
+  MiniPGM::Edge.new('B', 'C'),
+  MiniPGM::Edge.new('C', 'D'),
+  MiniPGM::Edge.new('D', 'A')
+)
+
+model.add_factor(
+  MiniPGM::DiscreteFactor.new(
+    [
+      MiniPGM::Variable.new('A', 2),
+      MiniPGM::Variable.new('B', 2)
+    ],
+    [
+      50, 5, 5, 50
+    ]
+  )
+)
+
+model.add_factor(
+  MiniPGM::DiscreteFactor.new(
+    [
+      MiniPGM::Variable.new('B', 2),
+      MiniPGM::Variable.new('C', 2)
+    ],
+    [
+      1, 5, 45, 50
+    ]
+  )
+)
+
+model.add_factor(
+  MiniPGM::DiscreteFactor.new(
+    [
+      MiniPGM::Variable.new('C', 2),
+      MiniPGM::Variable.new('D', 2)
+    ],
+    [
+      1, 15, 40, 50
+    ]
+  )
+)
+
+model.add_factor(
+  MiniPGM::DiscreteFactor.new(
+    [
+      MiniPGM::Variable.new('D', 2),
+      MiniPGM::Variable.new('A', 2)
+    ],
+    [
+      5, 50, 50, 5
+    ]
+  )
+)
+
+puts model.to_s

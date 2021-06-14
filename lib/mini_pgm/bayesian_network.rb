@@ -5,7 +5,7 @@ require_relative 'node'
 
 module MiniPGM
   #
-  # Represents a bayesian network
+  # A directed graph representing a bayesian network
   #
   class BayesianNetwork
     #

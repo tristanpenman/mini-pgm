@@ -1,6 +1,8 @@
 require 'mini_pgm/bayesian_network'
 require 'mini_pgm/edge'
 require 'mini_pgm/errors'
+require 'mini_pgm/discrete_factor'
+require 'mini_pgm/markov_network'
 require 'mini_pgm/node'
 require 'mini_pgm/printer'
 require 'mini_pgm/tabular_cpd'
