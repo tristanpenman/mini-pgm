@@ -31,6 +31,9 @@ module MiniPGM
       @factors = []
       @edges = sort_edges(edges)
       @nodes = reduce_edges(edges)
+
+      dupe = find_duplicate_edge
+      raise ModelError, "graph contains a duplicate edge: #{dupe}" if dupe
     end
 
     def add_factor(factor)
@@ -58,6 +61,11 @@ module MiniPGM
     end
 
     private
+
+    def find_duplicate_edge
+      canonicalised = edges.map(&:canonicalise)
+      canonicalised.detect { |edge| canonicalised.count(edge) > 1 }
+    end
 
     def edge_to_s(edge)
       "#{edge.from} -- #{edge.to}"
@@ -90,7 +98,7 @@ module MiniPGM
     end
 
     def sort_edges(edges)
-      edges.sort_by(&:from)
+      edges.sort_by { |edge| [edge.from, edge.to] }
     end
 
     def write_set(set)

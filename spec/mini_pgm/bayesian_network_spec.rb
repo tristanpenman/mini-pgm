@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 describe MiniPGM::BayesianNetwork do
   let(:student_model) do
-    MiniPGM::BayesianNetwork.new(
+    described_class.new(
       MiniPGM::Edge.new('Difficulty', 'Grade'),
       MiniPGM::Edge.new('Intelligence', 'Grade'),
       MiniPGM::Edge.new('Intelligence', 'SAT'),
@@ -13,7 +13,7 @@ describe MiniPGM::BayesianNetwork do
   describe '.new' do
     it 'detects cycles in a trivial case' do
       expect do
-        MiniPGM::BayesianNetwork.new(
+        described_class.new(
           MiniPGM::Edge.new('A', 'A')
         )
       end.to raise_error(MiniPGM::ModelError) { |e| expect(e.message).to include('cycle') }
@@ -21,7 +21,7 @@ describe MiniPGM::BayesianNetwork do
 
     it 'detects cycles in a non-trivial cases' do
       expect do
-        MiniPGM::BayesianNetwork.new(
+        described_class.new(
           MiniPGM::Edge.new('A', 'B'),
           MiniPGM::Edge.new('B', 'C'),
           MiniPGM::Edge.new('C', 'D'),
@@ -67,5 +67,9 @@ describe MiniPGM::BayesianNetwork do
         end
       end
     end
+  end
+
+  describe '#to_factor' do
+
   end
 end
