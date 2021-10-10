@@ -7,7 +7,7 @@ module MiniPGM
   # Example string representation:
   #
   #   +------+------+------+-----------------+
-  #   |  x1  |  x2  |  x3  | phi(x1, x2, x3) |
+  #   | x1   | x2   | x3   | phi(x1, x2, x3) |
   #   +------+------+------+-----------------+
   #   | x1_0 | x2_0 | x3_0 | 0.1             |
   #   +------+------+------+-----------------+
@@ -55,7 +55,7 @@ module MiniPGM
       rows.each.with_index do |row, index|
         # output current labels
         (0...num_labels).each do |column|
-          row[column] = counters[column].to_s
+          row[column] = "#{variables[column].label}_#{counters[column]}"
         end
 
         # increment labels
