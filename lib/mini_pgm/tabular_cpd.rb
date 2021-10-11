@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'discrete_factor'
 require_relative 'printer'
 
 module MiniPGM
@@ -39,6 +40,10 @@ module MiniPGM
       @variable = variable
       @evidence = evidence
       @data = data
+    end
+
+    def to_factor
+      DiscreteFactor.new([@variable] + @evidence, @data.flatten)
     end
 
     def to_s

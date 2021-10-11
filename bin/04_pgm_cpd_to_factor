@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+# Add lib directory to front of include path
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'mini_pgm'
+
+cpd_cancer = MiniPGM::TabularCPD.new(
+  MiniPGM::Variable.new('Cancer', 2),       # C_0, C_1
+  [
+    MiniPGM::Variable.new('Smoker', 2),     # S_0, S_1
+    MiniPGM::Variable.new('Pollution', 2)   # P_0, P_1
+  ],
+  [
+    # S_0   S_0   S_1   S_1
+    # P_0   P_1   P_0   P_1
+    [0.03, 0.05, 0.001, 0.02],  # C_0
+    [0.97, 0.95, 0.999, 0.98]   # C_1
+  ]
+)
+
+puts 'Tabular CPD:'
+puts cpd_cancer.to_s
+puts ''
+
+cpd_factor = cpd_cancer.to_factor
+puts 'Factor:'
+puts cpd_factor.to_s
