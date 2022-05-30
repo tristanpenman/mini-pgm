@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+# Add lib directory to front of include path
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'mini_pgm'
+
+cpd_pollution = MiniPGM::TabularCPD.new(
+  MiniPGM::Variable.new('Pollution', 2),
+  [],
+  [
+    [0.9],
+    [0.1]
+  ]
+)
+
+cpd_smoker = MiniPGM::TabularCPD.new(
+  MiniPGM::Variable.new('Smoker', 2),
+  [],
+  [
+    [0.3],
+    [0.7]
+  ]
+)
+
+cpd_cancer = MiniPGM::TabularCPD.new(
+  MiniPGM::Variable.new('Cancer', 2),
+  [
+    MiniPGM::Variable.new('Smoker', 2),
+    MiniPGM::Variable.new('Pollution', 2)
+  ],
+  [
+    [0.03, 0.05, 0.001, 0.02],
+    [0.97, 0.95, 0.999, 0.98]
+  ]
+)
+
+model = MiniPGM::BayesianNetwork.new(
+  MiniPGM::Edge.new('Pollution', 'Cancer'),
+  MiniPGM::Edge.new('Smoker', 'Cancer')
+)
+
+[cpd_cancer, cpd_pollution, cpd_smoker].each do |cpd|
+  puts 'Adding CPD:'
+  puts cpd
+  model.add_cpd(cpd)
+  puts
+rescue MiniPGM::ValidationError => e
+  puts "Error: #{e.message}"
+  puts
+end
+
+# TODO: infer something
+inference = MiniPGM::VariableElimination.new(model)
+
+# list of variables for which we'd like to compute the probability
+variables = []
+
+# conditioned on this evidence
+# presumably the evidence should not overlap with the variables we are querying
+evidence = []
+
+elimination_order = []
+
+inference.query(variables, evidence, elimination_order)
